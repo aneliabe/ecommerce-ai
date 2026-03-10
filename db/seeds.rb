@@ -7,13 +7,33 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+puts "Cleaning database..."
 Product.destroy_all
+User.destroy_all
 
-Product.create!(name: "Trousers", description: "A pair of bluejeans best suited for tall people.", price: 50, available: true)
-Product.create!(name: "Shirt", description: "A white shirt with a pocket.", price: 20, available: true)
-Product.create!(name: "Shoes", description: "A pair of black shoes.", price: 30, available: false)
-Product.create!(name: "Hat", description: "A baseball cap.", price: 10,   available: true)
-Product.create!(name: "Chair", description: "A wooden chair.", price: 40, available: true)
-Product.create!(name: "Table", description: "A metal table.", price: 60, available: false)
-Product.create!(name: "Sofa", description: "A leather sofa.", price: 100, available: true)
-Product.create!(name: "Bed", description: "A queen-sized bed.", price: 200, available: false)
+puts "Creating user..."
+
+user = User.create!(
+  email: "test@test.com",
+  password: "123456"
+)
+
+puts "Creating products..."
+
+Product.create!(
+  name: "Laptop",
+  description: "Fast laptop",
+  price: 1200,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Headphones",
+  description: "Noise cancelling",
+  price: 300,
+  available: true,
+  user: user
+)
+
+puts "Finished!"
