@@ -196,5 +196,244 @@ Product.create!(
   user: user
 )
 
+Product.create!(
+  name: "Cotton T-Shirt",
+  description: "Comfortable white cotton t-shirt",
+  price: 20,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Blue Jeans",
+  description: "Classic blue denim jeans",
+  price: 55,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Hoodie",
+  description: "Warm fleece hoodie",
+  price: 45,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Running Shoes",
+  description: "Lightweight running sneakers",
+  price: 80,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Baseball Cap",
+  description: "Adjustable cotton cap",
+  price: 18,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Backpack",
+  description: "Durable school backpack",
+  price: 40,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Notebook",
+  description: "200-page lined notebook",
+  price: 8,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Ballpoint Pens",
+  description: "Pack of 10 blue pens",
+  price: 6,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Highlighters",
+  description: "Set of 5 colorful highlighters",
+  price: 9,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Pencil Case",
+  description: "Fabric pencil pouch",
+  price: 12,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Desk Chair",
+  description: "Comfortable office desk chair",
+  price: 120,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Water Bottle",
+  description: "Reusable stainless steel bottle",
+  price: 22,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Coffee Mug",
+  description: "Ceramic coffee mug",
+  price: 14,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Blanket",
+  description: "Soft fleece blanket",
+  price: 35,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Pillow",
+  description: "Memory foam pillow",
+  price: 30,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Sunglasses",
+  description: "UV protection sunglasses",
+  price: 28,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Leather Belt",
+  description: "Classic brown leather belt",
+  price: 32,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Winter Jacket",
+  description: "Warm insulated jacket",
+  price: 120,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Sports Shorts",
+  description: "Breathable athletic shorts",
+  price: 25,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Yoga Mat",
+  description: "Non-slip exercise yoga mat",
+  price: 35,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Lunch Box",
+  description: "Insulated lunch container",
+  price: 18,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Sticky Notes",
+  description: "Pack of colorful sticky notes",
+  price: 7,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Stapler",
+  description: "Standard office stapler",
+  price: 10,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Scissors",
+  description: "Sharp stainless steel scissors",
+  price: 9,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Desk Organizer",
+  description: "Organizer for pens and office supplies",
+  price: 16,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Wall Clock",
+  description: "Minimalist wall clock",
+  price: 27,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Photo Frame",
+  description: "Wooden photo frame",
+  price: 15,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Reusable Shopping Bag",
+  description: "Eco-friendly cloth shopping bag",
+  price: 12,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Kitchen Knife",
+  description: "Stainless steel chef knife",
+  price: 38,
+  available: true,
+  user: user
+)
+
+Product.create!(
+  name: "Cutting Board",
+  description: "Wooden kitchen cutting board",
+  price: 24,
+  available: true,
+  user: user
+)
 
 puts "Finished!"
