@@ -1,11 +1,15 @@
 class Product < ApplicationRecord
   belongs_to :user
+  belongs_to :category
+
+  has_many :questions, dependent: :destroy
   has_neighbors :embedding
 
   after_create :set_embedding
 
   validates :name, presence: true
   validates :price, presence: true
+  validates :sku, uniqueness: true
 
   private
 
