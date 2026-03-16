@@ -1,439 +1,69 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
-puts "Cleaning database..."
+require "securerandom"
+
+Question.destroy_all
 Product.destroy_all
-User.destroy_all
+Category.destroy_all
 
-puts "Creating user..."
+puts "Creating categories..."
 
-user = User.create!(
-  email: "test@test.com",
-  password: "123456"
-)
+electronics = Category.create!(name: "Electronics")
+clothing = Category.create!(name: "Clothing")
+school = Category.create!(name: "School Supplies")
+home = Category.create!(name: "Home")
+sports = Category.create!(name: "Sports")
 
 puts "Creating products..."
 
-Product.create!(
-  name: "Laptop",
-  description: "Fast laptop",
-  price: 1200,
-  available: true,
-  user: user
-)
+products = [
 
-Product.create!(
-  name: "Headphones",
-  description: "Noise cancelling",
-  price: 300,
-  available: true,
-  user: user
-)
+  # Electronics
+  { name: "Wireless Mouse", category: electronics, price: 25, stock_quantity: 40, image: "https://source.unsplash.com/600x600/?mouse,computer" },
+  { name: "Bluetooth Headphones", category: electronics, price: 90, stock_quantity: 30, image: "https://source.unsplash.com/600x600/?headphones" },
+  { name: "Mechanical Keyboard", category: electronics, price: 120, stock_quantity: 20, image: "https://source.unsplash.com/600x600/?keyboard" },
+  { name: "USB-C Charger", category: electronics, price: 20, stock_quantity: 50, image: "https://source.unsplash.com/600x600/?charger" },
+  { name: "Laptop Stand", category: electronics, price: 35, stock_quantity: 25, image: "https://source.unsplash.com/600x600/?laptop,stand" },
 
-Product.create!(
-  name: "Smartphone",
-  description: "Latest model smartphone",
-  price: 900,
-  available: true,
-  user: user
-)
+  # Clothing
+  { name: "Cotton T-Shirt", category: clothing, price: 18, stock_quantity: 80, image: "https://source.unsplash.com/600x600/?tshirt" },
+  { name: "Denim Jacket", category: clothing, price: 65, stock_quantity: 35, image: "https://source.unsplash.com/600x600/?denim,jacket" },
+  { name: "Summer Dress", category: clothing, price: 45, stock_quantity: 40, image: "https://source.unsplash.com/600x600/?dress" },
+  { name: "Running Shorts", category: clothing, price: 22, stock_quantity: 60, image: "https://source.unsplash.com/600x600/?shorts,clothing" },
+  { name: "Hoodie", category: clothing, price: 50, stock_quantity: 55, image: "https://source.unsplash.com/600x600/?hoodie" },
 
-Product.create!(
-  name: "Tablet",
-  description: "10-inch display tablet",
-  price: 600,
-  available: true,
-  user: user
-)
+  # School Supplies
+  { name: "Spiral Notebook", category: school, price: 5, stock_quantity: 200, image: "https://source.unsplash.com/600x600/?notebook" },
+  { name: "Backpack", category: school, price: 40, stock_quantity: 70, image: "https://source.unsplash.com/600x600/?backpack" },
+  { name: "Pen Set", category: school, price: 12, stock_quantity: 120, image: "https://source.unsplash.com/600x600/?pens" },
+  { name: "Highlighters", category: school, price: 8, stock_quantity: 110, image: "https://source.unsplash.com/600x600/?highlighters" },
+  { name: "Desk Organizer", category: school, price: 15, stock_quantity: 60, image: "https://source.unsplash.com/600x600/?desk,organizer" },
 
-Product.create!(
-  name: "Monitor",
-  description: "27-inch 4K monitor",
-  price: 450,
-  available: true,
-  user: user
-)
+  # Home
+  { name: "Ceramic Mug", category: home, price: 14, stock_quantity: 90, image: "https://source.unsplash.com/600x600/?mug" },
+  { name: "Desk Lamp", category: home, price: 32, stock_quantity: 35, image: "https://source.unsplash.com/600x600/?desk,lamp" },
+  { name: "Wall Clock", category: home, price: 28, stock_quantity: 40, image: "https://source.unsplash.com/600x600/?wall,clock" },
+  { name: "Throw Pillow", category: home, price: 20, stock_quantity: 50, image: "https://source.unsplash.com/600x600/?pillow" },
+  { name: "Plant Pot", category: home, price: 16, stock_quantity: 70, image: "https://source.unsplash.com/600x600/?plant,pot" },
 
-Product.create!(
-  name: "Keyboard",
-  description: "Mechanical keyboard",
-  price: 120,
-  available: true,
-  user: user
-)
+  # Sports
+  { name: "Yoga Mat", category: sports, price: 25, stock_quantity: 65, image: "https://source.unsplash.com/600x600/?yoga,mat" },
+  { name: "Water Bottle", category: sports, price: 15, stock_quantity: 100, image: "https://source.unsplash.com/600x600/?water,bottle" },
+  { name: "Resistance Bands", category: sports, price: 18, stock_quantity: 75, image: "https://source.unsplash.com/600x600/?fitness,bands" },
+  { name: "Jump Rope", category: sports, price: 10, stock_quantity: 90, image: "https://source.unsplash.com/600x600/?jump,rope" },
+  { name: "Gym Gloves", category: sports, price: 22, stock_quantity: 45, image: "https://source.unsplash.com/600x600/?gym,gloves" }
 
-Product.create!(
-  name: "Mouse",
-  description: "Wireless ergonomic mouse",
-  price: 60,
-  available: true,
-  user: user
-)
+]
 
-Product.create!(
-  name: "Webcam",
-  description: "HD webcam for video calls",
-  price: 80,
-  available: true,
-  user: user
-)
+products.each do |p|
+  Product.create!(
+    name: p[:name],
+    description: "High quality #{p[:name]}",
+    price: p[:price],
+    sku: SecureRandom.hex(4),
+    stock_quantity: p[:stock_quantity],
+    category: p[:category],
+    available: true,
+    user: User.first
+  )
+end
 
-Product.create!(
-  name: "Microphone",
-  description: "USB condenser microphone",
-  price: 150,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Gaming Chair",
-  description: "Comfortable ergonomic chair",
-  price: 350,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "External SSD",
-  description: "1TB portable SSD",
-  price: 180,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "USB Hub",
-  description: "7-port USB hub",
-  price: 40,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Printer",
-  description: "All-in-one inkjet printer",
-  price: 220,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Desk Lamp",
-  description: "LED desk lamp with adjustable brightness",
-  price: 45,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Router",
-  description: "High-speed WiFi router",
-  price: 130,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Smartwatch",
-  description: "Fitness tracking smartwatch",
-  price: 250,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Bluetooth Speaker",
-  description: "Portable Bluetooth speaker",
-  price: 90,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Power Bank",
-  description: "20000mAh portable charger",
-  price: 55,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "VR Headset",
-  description: "Virtual reality headset",
-  price: 400,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Graphics Tablet",
-  description: "Digital drawing tablet",
-  price: 210,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Laptop Stand",
-  description: "Adjustable aluminum laptop stand",
-  price: 70,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Cable Organizer",
-  description: "Desk cable management box",
-  price: 25,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Cotton T-Shirt",
-  description: "Comfortable white cotton t-shirt",
-  price: 20,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Blue Jeans",
-  description: "Classic blue denim jeans",
-  price: 55,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Hoodie",
-  description: "Warm fleece hoodie",
-  price: 45,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Running Shoes",
-  description: "Lightweight running sneakers",
-  price: 80,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Baseball Cap",
-  description: "Adjustable cotton cap",
-  price: 18,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Backpack",
-  description: "Durable school backpack",
-  price: 40,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Notebook",
-  description: "200-page lined notebook",
-  price: 8,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Ballpoint Pens",
-  description: "Pack of 10 blue pens",
-  price: 6,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Highlighters",
-  description: "Set of 5 colorful highlighters",
-  price: 9,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Pencil Case",
-  description: "Fabric pencil pouch",
-  price: 12,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Desk Chair",
-  description: "Comfortable office desk chair",
-  price: 120,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Water Bottle",
-  description: "Reusable stainless steel bottle",
-  price: 22,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Coffee Mug",
-  description: "Ceramic coffee mug",
-  price: 14,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Blanket",
-  description: "Soft fleece blanket",
-  price: 35,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Pillow",
-  description: "Memory foam pillow",
-  price: 30,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Sunglasses",
-  description: "UV protection sunglasses",
-  price: 28,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Leather Belt",
-  description: "Classic brown leather belt",
-  price: 32,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Winter Jacket",
-  description: "Warm insulated jacket",
-  price: 120,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Sports Shorts",
-  description: "Breathable athletic shorts",
-  price: 25,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Yoga Mat",
-  description: "Non-slip exercise yoga mat",
-  price: 35,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Lunch Box",
-  description: "Insulated lunch container",
-  price: 18,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Sticky Notes",
-  description: "Pack of colorful sticky notes",
-  price: 7,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Stapler",
-  description: "Standard office stapler",
-  price: 10,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Scissors",
-  description: "Sharp stainless steel scissors",
-  price: 9,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Desk Organizer",
-  description: "Organizer for pens and office supplies",
-  price: 16,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Wall Clock",
-  description: "Minimalist wall clock",
-  price: 27,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Photo Frame",
-  description: "Wooden photo frame",
-  price: 15,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Reusable Shopping Bag",
-  description: "Eco-friendly cloth shopping bag",
-  price: 12,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Kitchen Knife",
-  description: "Stainless steel chef knife",
-  price: 38,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Cutting Board",
-  description: "Wooden kitchen cutting board",
-  price: 24,
-  available: true,
-  user: user
-)
-
-puts "Finished!"
+puts "Seed completed!"
