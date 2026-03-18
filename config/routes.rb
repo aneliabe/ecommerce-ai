@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     resources :payments, only: :new
   end
 
-  # mount StripeEvent::Engine, at: '/stripe-webhooks'
+  mount StripeEvent::Engine, at: '/stripe-webhooks'
 
   devise_for :users
   root to: "pages#home"
