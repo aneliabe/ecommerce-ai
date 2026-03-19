@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   resources :products
+
   resources :questions, only: [:index, :create]
+
+  resources :orders, only: [:show, :create] do
+    resources :payments, only: :new
+  end
+
+  mount StripeEvent::Engine, at: '/stripe-webhooks'
 
   devise_for :users
   root to: "pages#home"

@@ -11,6 +11,8 @@ class Product < ApplicationRecord
   validates :price, presence: true
   validates :sku, uniqueness: true
 
+  monetize :price_cents
+
   private
 
   def set_embedding
