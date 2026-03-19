@@ -1,16 +1,14 @@
 require "securerandom"
 
 Question.destroy_all
-Product.destroy_all
-Category.destroy_all
 
 puts "Creating categories..."
 
-electronics = Category.create!(name: "Electronics")
-clothing = Category.create!(name: "Clothing")
-school = Category.create!(name: "School Supplies")
-home = Category.create!(name: "Home")
-sports = Category.create!(name: "Sports")
+electronics = Category.find_or_create_by!(name: "Electronics")
+clothing    = Category.find_or_create_by!(name: "Clothing")
+school      = Category.find_or_create_by!(name: "School Supplies")
+home        = Category.find_or_create_by!(name: "Home")
+sports      = Category.find_or_create_by!(name: "Sports")
 
 puts "Creating products..."
 
@@ -54,16 +52,15 @@ products = [
 ]
 
 products.each do |p|
-  Product.create!(
-    name: p[:name],
-    description: "High quality #{p[:name]}",
-    price: p[:price],
-    sku: SecureRandom.hex(4),
-    stock_quantity: p[:stock_quantity],
-    category: p[:category],
-    available: true,
-    user: User.first
-  )
+  Product.find_or_create_by!(name: p[:name]) do |product|
+    product.description = "High quality #{p[:name]}"
+    product.price = p[:price]
+    product.sku = SecureRandom.hex(4)
+    product.stock_quantity = p[:stock_quantity]
+    product.category = p[:category]
+    product.available = true
+    product.user = User.first
+  end
 end
 
 puts "Seed completed!"

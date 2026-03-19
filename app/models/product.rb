@@ -2,7 +2,6 @@ class Product < ApplicationRecord
   belongs_to :user
   belongs_to :category
 
-  has_many :questions, dependent: :destroy
   has_neighbors :embedding
 
   after_create :set_embedding
