@@ -1,18 +1,30 @@
 class Product < ApplicationRecord
   belongs_to :user
   belongs_to :category
-
   has_neighbors :embedding
 
   after_create :set_embedding
 
   validates :name, presence: true
   validates :price, presence: true
-  validates :sku, uniqueness: true
+  validates :sku, presence: true, uniqueness: true
 
   monetize :price_cents
 
+  has_many_attached :photos
+
+  before_validation :generate_sku
+
   private
+
+  def generate_sku
+    return if self.sku.present?
+
+    loop do
+      self.sku = SecureRandom.hex(8)   # ✅ THIS is the fix
+      break unless Product.exists?(sku: self.sku)
+    end
+  end
 
   def set_embedding
     client = OpenAI::Client.new

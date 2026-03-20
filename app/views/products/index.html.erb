@@ -8,7 +8,9 @@
         <%= link_to product.name, product_path(product) %>
       </h3>
 
-      <p><strong>Category:</strong> <%= product.category.name %></p>
+      <p><strong>Category:</strong> 
+        <%= product.category&.name || "No category" %>
+      </p>
 
       <p><strong>Price:</strong> $<%= product.price %></p>
 
