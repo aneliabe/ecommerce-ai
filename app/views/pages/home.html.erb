@@ -1,2 +1,16 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<div class="banner" style="background-image: linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('<%= image_path "banner.png" %>');">
+  <div class="container">
+    <h1>Find the perfect <strong>product</strong> using AI!</h1>
+    <p>Search smarter. Discover faster.</p>
+
+      <%= simple_form_for :search, url: products_path, method: :get, html: { class: "simple-search-form" } do |f| %>
+        <%= f.input :query, 
+                    label: false, 
+                    placeholder: "Search products...", 
+                    input_html: { value: params[:query] } %>
+
+        <%= f.button :submit, "Search" %>
+      <% end %>
+  </div>
+</div>
+

@@ -3,7 +3,26 @@ class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
   def index
-    @products = Product.all
+    @query = params[:query]
+
+    if params[:search] && params[:search][:query].present?
+      client = OpenAI::Client.new
+
+      response = client.embeddings(
+        parameters: {
+          model: "text-embedding-3-small",
+          input: params[:search][:query]
+        }
+      )
+
+      query_embedding = response["data"][0]["embedding"]
+
+      @products = Product.where.not(embedding: nil)
+                        .nearest_neighbors(:embedding, query_embedding, distance: "cosine")
+                        .first(8)
+    else
+      @products = Product.all.sample(8)
+    end
   end
 
   def show
