@@ -1,4 +1,66 @@
-<h1><%= @product.name %></h1>
+<div class="product-show">
+
+  <div class="product-show-container">
+
+    <!-- LEFT: IMAGES -->
+    <div class="product-image-section">
+      <% if @product.photos.attached? %>
+        <%= cl_image_tag @product.photos.first.key, class: "main-product-image" %>
+      <% end %>
+
+      <div class="thumbnails">
+        <% @product.photos.each do |photo| %>
+          <%= cl_image_tag photo.key, class: "thumbnail" %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- RIGHT: INFO -->
+    <div class="product-info">
+
+      <h1><%= @product.name %></h1>
+
+      <p class="category">
+        <%= @product.category&.name %>
+      </p>
+
+      <p class="price">$<%= @product.price %></p>
+
+      <p class="description">
+        <%= @product.description %>
+      </p>
+
+      <p class="seller">
+        Sold by: <%= @product.user.email %>
+      </p>
+
+      <p class="stock">
+        Stock: <%= @product.stock_quantity %>
+      </p>
+
+      <% if @product.available? %>
+        <p class="available">In stock</p>
+      <% else %>
+        <p class="unavailable">Out of stock</p>
+      <% end %>
+
+      <!-- BUY BUTTON -->
+      <% if @product.available? %>
+        <%= submit_tag 'Purchase', class: 'buy-button' %>
+      <% else %>
+        <button class="buy-button" disabled>Out of stock</button>
+      <% end %>
+
+      <%= link_to "← Back to products", products_path, class: "back-link" %>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- <h1><%= @product.name %></h1>
 
 <p><strong>Description:</strong></p>
 <p><%= @product.description %></p>
@@ -36,7 +98,7 @@
 
 
 
-<!-- <h1><%= @product.name %></h1>
+ <h1><%= @product.name %></h1>
 
 <p><%= @product.description %></p>
 

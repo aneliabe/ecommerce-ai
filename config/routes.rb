@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-  resources :products
+  resources :products do
+    collection do
+      get :my_products
+    end
+  end
 
   resources :questions, only: [:index, :create]
 

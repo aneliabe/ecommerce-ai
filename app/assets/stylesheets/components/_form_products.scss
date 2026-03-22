@@ -1,0 +1,80 @@
+/* PAGE WRAPPER */
+.product-form-page {
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+/* FORM CARD */
+.form-container {
+  width: 100%;
+  max-width: 500px;
+  background: #f9f9f9;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+/* TITLE */
+.form-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+/* INPUT SPACING */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* INPUT STYLE (Simple Form uses .form-control) */
+.form-control {
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  transition: 0.2s;
+}
+
+.form-control:focus {
+  border-color: #670BFF;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(103, 11, 255, 0.1);
+}
+
+/* LABELS */
+label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* FILE INPUT */
+input[type="file"] {
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+}
+
+/* BUTTON */
+.btn-main {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #670BFF;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-main:hover {
+  background: #4a08b0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .form-container {
+    padding: 25px;
+  }
+}

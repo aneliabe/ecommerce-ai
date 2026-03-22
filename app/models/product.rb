@@ -15,6 +15,10 @@ class Product < ApplicationRecord
 
   before_validation :generate_sku
 
+  def available?
+    stock_quantity.present? && stock_quantity > 0
+  end
+
   private
 
   def generate_sku
@@ -31,10 +35,20 @@ class Product < ApplicationRecord
     response = client.embeddings(
       parameters: {
         model: 'text-embedding-3-small',
-        input: "Product: #{name}. Description: #{description} - Price: #{price}"
+        input: "
+                This is an ecommerce product.
+
+                Category: #{category&.name}.
+
+                Product name: #{name}.
+
+                Description: #{description}.
+                "
+        # input: "Product: #{name}. Category: #{category&.name}. Description: #{description} - Price: #{price}"
       }
     )
     embedding = response['data'][0]['embedding']
     update(embedding: embedding)
   end
+
 end

@@ -1,8 +1,9 @@
-<div class="container chatbot">
-  <h1>Chat with us</h1>
-  <div id="questions">
+<div class="container chatbot" data-controller="scroll" >
+  <h1>AI Shopping Assistant</h1>
+  <div id="questions" data-scroll-target="container">
     <%= render @questions %>
   </div>
 
   <%= render "form", question: @question %>
 </div>
+

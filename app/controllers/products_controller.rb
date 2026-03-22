@@ -3,23 +3,11 @@ class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
   def index
-    @query = params[:query]
-
-    if params[:search] && params[:search][:query].present?
-      client = OpenAI::Client.new
-
-      response = client.embeddings(
-        parameters: {
-          model: "text-embedding-3-small",
-          input: params[:search][:query]
-        }
+    if params[:query].present?
+      @products = Product.where(
+        "name ILIKE :query OR description ILIKE :query",
+        query: "%#{params[:query]}%"
       )
-
-      query_embedding = response["data"][0]["embedding"]
-
-      @products = Product.where.not(embedding: nil)
-                        .nearest_neighbors(:embedding, query_embedding, distance: "cosine")
-                        .first(8)
     else
       @products = Product.all.sample(8)
     end
@@ -60,6 +48,11 @@ class ProductsController < ApplicationController
     redirect_to products_path
   end
 
+  def my_products
+    @products = current_user.products
+  end
+
+
   private
 
   def set_product
@@ -67,6 +60,6 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:name, :description, :price, :available, :category_id, photos: [])
+    params.require(:product).permit(:name, :description, :price, :stock_quantity, :category_id, photos: [])
   end
 end
