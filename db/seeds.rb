@@ -1,66 +1,181 @@
-require "securerandom"
+require "open-uri"
 
-Question.destroy_all
+puts "Cleaning database..."
+
+Order.destroy_all
+Product.destroy_all
+Category.destroy_all
 
 puts "Creating categories..."
 
-electronics = Category.find_or_create_by!(name: "Electronics")
-clothing    = Category.find_or_create_by!(name: "Clothing")
-school      = Category.find_or_create_by!(name: "School Supplies")
-home        = Category.find_or_create_by!(name: "Home")
-sports      = Category.find_or_create_by!(name: "Sports")
+categories = {
+  living_room: Category.create!(name: "Living Room"),
+  bedroom:     Category.create!(name: "Bedroom"),
+  kitchen:     Category.create!(name: "Kitchen"),
+  office:      Category.create!(name: "Office"),
+  lighting:    Category.create!(name: "Lighting"),
+  decor:       Category.create!(name: "Decoration")
+}
 
-puts "Creating products..."
+def create_product(name:, description:, price:, category:, keyword:)
+  begin
+    file = URI.parse("https://source.unsplash.com/600x400/?#{keyword}").open("User-Agent" => "Ruby")
+  rescue
+    file = URI.parse("https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg").open
+  end
 
-products = [
+  product = Product.new(
+    name: name,
+    description: description,
+    price: price,
+    category: category,
+    available: true,
+    user: User.first
+  )
 
-  # Electronics
-  { name: "Wireless Mouse", category: electronics, price: 25, stock_quantity: 40, image: "https://source.unsplash.com/600x600/?mouse,computer" },
-  { name: "Bluetooth Headphones", category: electronics, price: 90, stock_quantity: 30, image: "https://source.unsplash.com/600x600/?headphones" },
-  { name: "Mechanical Keyboard", category: electronics, price: 120, stock_quantity: 20, image: "https://source.unsplash.com/600x600/?keyboard" },
-  { name: "USB-C Charger", category: electronics, price: 20, stock_quantity: 50, image: "https://source.unsplash.com/600x600/?charger" },
-  { name: "Laptop Stand", category: electronics, price: 35, stock_quantity: 25, image: "https://source.unsplash.com/600x600/?laptop,stand" },
+  product.photos.attach(
+    io: file,
+    filename: "#{name.parameterize}.jpg",
+    content_type: "image/jpeg"
+  )
 
-  # Clothing
-  { name: "Cotton T-Shirt", category: clothing, price: 18, stock_quantity: 80, image: "https://source.unsplash.com/600x600/?tshirt" },
-  { name: "Denim Jacket", category: clothing, price: 65, stock_quantity: 35, image: "https://source.unsplash.com/600x600/?denim,jacket" },
-  { name: "Summer Dress", category: clothing, price: 45, stock_quantity: 40, image: "https://source.unsplash.com/600x600/?dress" },
-  { name: "Running Shorts", category: clothing, price: 22, stock_quantity: 60, image: "https://source.unsplash.com/600x600/?shorts,clothing" },
-  { name: "Hoodie", category: clothing, price: 50, stock_quantity: 55, image: "https://source.unsplash.com/600x600/?hoodie" },
+  product.save!
+end
 
-  # School Supplies
-  { name: "Spiral Notebook", category: school, price: 5, stock_quantity: 200, image: "https://source.unsplash.com/600x600/?notebook" },
-  { name: "Backpack", category: school, price: 40, stock_quantity: 70, image: "https://source.unsplash.com/600x600/?backpack" },
-  { name: "Pen Set", category: school, price: 12, stock_quantity: 120, image: "https://source.unsplash.com/600x600/?pens" },
-  { name: "Highlighters", category: school, price: 8, stock_quantity: 110, image: "https://source.unsplash.com/600x600/?highlighters" },
-  { name: "Desk Organizer", category: school, price: 15, stock_quantity: 60, image: "https://source.unsplash.com/600x600/?desk,organizer" },
+# ------------------------
+# PRODUCT GENERATOR
+# ------------------------
 
-  # Home
-  { name: "Ceramic Mug", category: home, price: 14, stock_quantity: 90, image: "https://source.unsplash.com/600x600/?mug" },
-  { name: "Desk Lamp", category: home, price: 32, stock_quantity: 35, image: "https://source.unsplash.com/600x600/?desk,lamp" },
-  { name: "Wall Clock", category: home, price: 28, stock_quantity: 40, image: "https://source.unsplash.com/600x600/?wall,clock" },
-  { name: "Throw Pillow", category: home, price: 20, stock_quantity: 50, image: "https://source.unsplash.com/600x600/?pillow" },
-  { name: "Plant Pot", category: home, price: 16, stock_quantity: 70, image: "https://source.unsplash.com/600x600/?plant,pot" },
-
-  # Sports
-  { name: "Yoga Mat", category: sports, price: 25, stock_quantity: 65, image: "https://source.unsplash.com/600x600/?yoga,mat" },
-  { name: "Water Bottle", category: sports, price: 15, stock_quantity: 100, image: "https://source.unsplash.com/600x600/?water,bottle" },
-  { name: "Resistance Bands", category: sports, price: 18, stock_quantity: 75, image: "https://source.unsplash.com/600x600/?fitness,bands" },
-  { name: "Jump Rope", category: sports, price: 10, stock_quantity: 90, image: "https://source.unsplash.com/600x600/?jump,rope" },
-  { name: "Gym Gloves", category: sports, price: 22, stock_quantity: 45, image: "https://source.unsplash.com/600x600/?gym,gloves" }
-
-]
-
-products.each do |p|
-  Product.find_or_create_by!(name: p[:name]) do |product|
-    product.description = "High quality #{p[:name]}"
-    product.price = p[:price]
-    product.sku = SecureRandom.hex(4)
-    product.stock_quantity = p[:stock_quantity]
-    product.category = p[:category]
-    product.available = true
-    product.user = User.first
+def generate_products(category:, base_names:, keyword:)
+  base_names.each do |name|
+    create_product(
+      name: name,
+      description: "#{name} designed for modern homes. Ideal for #{category.name.downcase}, combining style, comfort, and functionality.",
+      price: rand(50..1200),
+      category: category,
+      keyword: keyword
+    )
   end
 end
 
-puts "Seed completed!"
+# ------------------------
+# LIVING ROOM (10)
+# ------------------------
+generate_products(
+  category: categories[:living_room],
+  keyword: "living room furniture",
+  base_names: [
+    "Scandinavian Sofa",
+    "Modern Coffee Table",
+    "Velvet Armchair",
+    "Wood TV Stand",
+    "Minimalist Bookshelf",
+    "Glass Side Table",
+    "Corner Sectional Sofa",
+    "Recliner Chair",
+    "Large Area Rug",
+    "Wall Art Set"
+  ]
+)
+
+# ------------------------
+# BEDROOM (10)
+# ------------------------
+generate_products(
+  category: categories[:bedroom],
+  keyword: "bedroom furniture",
+  base_names: [
+    "Queen Size Bed",
+    "Memory Foam Mattress",
+    "Bedside Table",
+    "Wardrobe Closet",
+    "Luxury Bedding Set",
+    "Soft Pillow Set",
+    "Full-Length Mirror",
+    "Bedroom Bench",
+    "Storage Bed Frame",
+    "Night Lamp"
+  ]
+)
+
+# ------------------------
+# KITCHEN (10)
+# ------------------------
+generate_products(
+  category: categories[:kitchen],
+  keyword: "kitchen tools",
+  base_names: [
+    "Nonstick Frying Pan",
+    "Knife Set",
+    "Blender Machine",
+    "Coffee Maker",
+    "Toaster Oven",
+    "Cooking Pot Set",
+    "Cutting Board",
+    "Dish Rack",
+    "Microwave Oven",
+    "Electric Kettle"
+  ]
+)
+
+# ------------------------
+# OFFICE (10)
+# ------------------------
+generate_products(
+  category: categories[:office],
+  keyword: "office furniture",
+  base_names: [
+    "Office Desk",
+    "Ergonomic Chair",
+    "Desk Lamp",
+    "Laptop Stand",
+    "Office Bookshelf",
+    "Drawer Organizer",
+    "Monitor Stand",
+    "Whiteboard",
+    "Office Cabinet",
+    "Standing Desk"
+  ]
+)
+
+# ------------------------
+# LIGHTING (10)
+# ------------------------
+generate_products(
+  category: categories[:lighting],
+  keyword: "home lighting",
+  base_names: [
+    "Ceiling Light Fixture",
+    "Floor Lamp",
+    "Table Lamp",
+    "LED Strip Lights",
+    "Pendant Light",
+    "Wall Sconce",
+    "Smart Bulb",
+    "Desk Light",
+    "Outdoor Lantern",
+    "Chandelier"
+  ]
+)
+
+# ------------------------
+# DECORATION (10)
+# ------------------------
+generate_products(
+  category: categories[:decor],
+  keyword: "home decor",
+  base_names: [
+    "Decorative Vase",
+    "Wall Mirror",
+    "Indoor Plant",
+    "Photo Frame Set",
+    "Candle Holder",
+    "Wall Clock",
+    "Decorative Sculpture",
+    "Throw Blanket",
+    "Decorative Tray",
+    "Shelf Decor Set"
+  ]
+)
+
+puts "Seeding done!"

@@ -1,8 +1,8 @@
 
 <div class="banner" style="background-image: linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('<%= image_path "banner.png" %>');">
   <div class="container">
-    <h1>Find the perfect <strong>product</strong> using AI!</h1>
-    <p>Search smarter. Discover faster.</p>
+    <h1>Find the perfect <strong>product</strong> for your needs</h1>
+    <p>Browse or ask our assistant for help</p>
 
       <%= simple_form_for :search, url: products_path, method: :get, html: { class: "simple-search-form" } do |f| %>
         <%= f.input :query, 
@@ -45,6 +45,11 @@
             <h3><%= product.name %></h3>
             <p class="category"><%= product.category&.name %></p>
             <p class="price">$<%= product.price %></p>
+            <% if product.available? %>
+              <p class="available">In stock</p>
+            <% else %>
+              <p class="unavailable">Out of stock</p>
+            <% end %>
           </div>
 
         </div>
