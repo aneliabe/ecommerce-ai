@@ -1,439 +1,402 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+require "open-uri"
+require "rqrcode"
+
 puts "Cleaning database..."
+
+Order.destroy_all
 Product.destroy_all
+Category.destroy_all
 User.destroy_all
 
-puts "Creating user..."
+puts "Creating users..."
 
-user = User.create!(
-  email: "test@test.com",
-  password: "123456"
+users = 3.times.map do |i|
+  User.create!(
+    email: "user#{i + 1}@example.com",
+    password: "123456"
+  )
+end
+
+puts "Creating categories..."
+
+categories = {
+  living_room: Category.create!(name: "Living Room"),
+  bedroom:     Category.create!(name: "Bedroom"),
+  kitchen:     Category.create!(name: "Kitchen"),
+  office:      Category.create!(name: "Office"),
+  lighting:    Category.create!(name: "Lighting"),
+  decor:       Category.create!(name: "Decoration")
+}
+
+# ------------------------
+# SAFE IMAGE METHOD (NO CRASH)
+# ------------------------
+def fetch_image(keyword)
+  begin
+    URI.parse("https://picsum.photos/seed/#{keyword}/600/400").open
+  rescue
+    URI.parse("https://via.placeholder.com/600x400.png").open
+  end
+end
+
+# ------------------------
+# CREATE PRODUCT
+# ------------------------
+def create_product(name:, description:, price:, category:, keyword:, user:)
+  file = fetch_image("#{keyword}-#{name.parameterize}")
+
+  stock = rand(0..20)
+
+  product = Product.new(
+    name: name,
+    description: description,
+    price_cents: price * 100, # ✅ FIXED
+    category: category,
+    available: stock > 0,
+    user: user,
+    sku: "#{name.parameterize}-#{rand(1000..9999)}",
+    stock_quantity: stock
+  )
+
+  product.photos.attach(
+    io: file,
+    filename: "#{name.parameterize}.jpg",
+    content_type: "image/jpeg"
+  )
+
+  product.save!
+
+  # ------------------------
+  # QR CODE
+  # ------------------------
+  product.update(
+    qr_code: "http://localhost:3000/products/#{product.id}"
+  )
+end
+
+# ------------------------
+# PRODUCT GENERATOR
+# ------------------------
+def generate_products(category:, base_names:, keyword:, users:)
+  base_names.each do |name|
+    create_product(
+      name: name,
+      description: "#{name} designed for modern homes. Perfect for #{category.name.downcase}, combining style, comfort, and durability.",
+      price: rand(50..1200),
+      category: category,
+      keyword: keyword,
+      user: users.sample
+    )
+  end
+end
+
+# ------------------------
+# LIVING ROOM
+# ------------------------
+generate_products(
+  category: categories[:living_room],
+  keyword: "living-room",
+  users: users,
+  base_names: [
+    "Scandinavian Sofa",
+    "Modern Coffee Table",
+    "Velvet Armchair",
+    "Wood TV Stand",
+    "Minimalist Bookshelf",
+    "Glass Side Table",
+    "Corner Sectional Sofa",
+    "Recliner Chair",
+    "Large Area Rug",
+    "Wall Art Set"
+  ]
 )
 
-puts "Creating products..."
-
-Product.create!(
-  name: "Laptop",
-  description: "Fast laptop",
-  price: 1200,
-  available: true,
-  user: user
+# ------------------------
+# BEDROOM
+# ------------------------
+generate_products(
+  category: categories[:bedroom],
+  keyword: "bedroom",
+  users: users,
+  base_names: [
+    "Queen Size Bed",
+    "Memory Foam Mattress",
+    "Bedside Table",
+    "Wardrobe Closet",
+    "Luxury Bedding Set",
+    "Soft Pillow Set",
+    "Full-Length Mirror",
+    "Bedroom Bench",
+    "Storage Bed Frame",
+    "Night Lamp"
+  ]
 )
 
-Product.create!(
-  name: "Headphones",
-  description: "Noise cancelling",
-  price: 300,
-  available: true,
-  user: user
+# ------------------------
+# KITCHEN
+# ------------------------
+generate_products(
+  category: categories[:kitchen],
+  keyword: "kitchen",
+  users: users,
+  base_names: [
+    "Nonstick Frying Pan",
+    "Knife Set",
+    "Blender Machine",
+    "Coffee Maker",
+    "Toaster Oven",
+    "Cooking Pot Set",
+    "Cutting Board",
+    "Dish Rack",
+    "Microwave Oven",
+    "Electric Kettle"
+  ]
 )
 
-Product.create!(
-  name: "Smartphone",
-  description: "Latest model smartphone",
-  price: 900,
-  available: true,
-  user: user
+# ------------------------
+# OFFICE
+# ------------------------
+generate_products(
+  category: categories[:office],
+  keyword: "office",
+  users: users,
+  base_names: [
+    "Office Desk",
+    "Ergonomic Chair",
+    "Desk Lamp",
+    "Laptop Stand",
+    "Office Bookshelf",
+    "Drawer Organizer",
+    "Monitor Stand",
+    "Whiteboard",
+    "Office Cabinet",
+    "Standing Desk"
+  ]
 )
 
-Product.create!(
-  name: "Tablet",
-  description: "10-inch display tablet",
-  price: 600,
-  available: true,
-  user: user
+# ------------------------
+# LIGHTING
+# ------------------------
+generate_products(
+  category: categories[:lighting],
+  keyword: "lighting",
+  users: users,
+  base_names: [
+    "Ceiling Light Fixture",
+    "Floor Lamp",
+    "Table Lamp",
+    "LED Strip Lights",
+    "Pendant Light",
+    "Wall Sconce",
+    "Smart Bulb",
+    "Desk Light",
+    "Outdoor Lantern",
+    "Chandelier"
+  ]
 )
 
-Product.create!(
-  name: "Monitor",
-  description: "27-inch 4K monitor",
-  price: 450,
-  available: true,
-  user: user
+# ------------------------
+# DECORATION
+# ------------------------
+generate_products(
+  category: categories[:decor],
+  keyword: "decor",
+  users: users,
+  base_names: [
+    "Decorative Vase",
+    "Wall Mirror",
+    "Indoor Plant",
+    "Photo Frame Set",
+    "Candle Holder",
+    "Wall Clock",
+    "Decorative Sculpture",
+    "Throw Blanket",
+    "Decorative Tray",
+    "Shelf Decor Set"
+  ]
 )
 
-Product.create!(
-  name: "Keyboard",
-  description: "Mechanical keyboard",
-  price: 120,
-  available: true,
-  user: user
-)
+puts "Seeding done!"
 
-Product.create!(
-  name: "Mouse",
-  description: "Wireless ergonomic mouse",
-  price: 60,
-  available: true,
-  user: user
-)
 
-Product.create!(
-  name: "Webcam",
-  description: "HD webcam for video calls",
-  price: 80,
-  available: true,
-  user: user
-)
+# require "open-uri"
 
-Product.create!(
-  name: "Microphone",
-  description: "USB condenser microphone",
-  price: 150,
-  available: true,
-  user: user
-)
+# puts "Cleaning database..."
 
-Product.create!(
-  name: "Gaming Chair",
-  description: "Comfortable ergonomic chair",
-  price: 350,
-  available: true,
-  user: user
-)
+# Order.destroy_all
+# Product.destroy_all
+# Category.destroy_all
 
-Product.create!(
-  name: "External SSD",
-  description: "1TB portable SSD",
-  price: 180,
-  available: true,
-  user: user
-)
+# puts "Creating categories..."
 
-Product.create!(
-  name: "USB Hub",
-  description: "7-port USB hub",
-  price: 40,
-  available: true,
-  user: user
-)
+# categories = {
+#   living_room: Category.create!(name: "Living Room"),
+#   bedroom:     Category.create!(name: "Bedroom"),
+#   kitchen:     Category.create!(name: "Kitchen"),
+#   office:      Category.create!(name: "Office"),
+#   lighting:    Category.create!(name: "Lighting"),
+#   decor:       Category.create!(name: "Decoration")
+# }
 
-Product.create!(
-  name: "Printer",
-  description: "All-in-one inkjet printer",
-  price: 220,
-  available: true,
-  user: user
-)
+# def create_product(name:, description:, price:, category:, keyword:)
+#   begin
+#     file = URI.parse("https://source.unsplash.com/600x400/?#{keyword}").open("User-Agent" => "Ruby")
+#   rescue
+#     file = URI.parse("https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg").open
+#   end
 
-Product.create!(
-  name: "Desk Lamp",
-  description: "LED desk lamp with adjustable brightness",
-  price: 45,
-  available: true,
-  user: user
-)
+#   product = Product.new(
+#     name: name,
+#     description: description,
+#     price: price,
+#     category: category,
+#     available: true,
+#     user: User.first
+#   )
 
-Product.create!(
-  name: "Router",
-  description: "High-speed WiFi router",
-  price: 130,
-  available: true,
-  user: user
-)
+#   product.photos.attach(
+#     io: file,
+#     filename: "#{name.parameterize}.jpg",
+#     content_type: "image/jpeg"
+#   )
 
-Product.create!(
-  name: "Smartwatch",
-  description: "Fitness tracking smartwatch",
-  price: 250,
-  available: true,
-  user: user
-)
+#   product.save!
+# end
 
-Product.create!(
-  name: "Bluetooth Speaker",
-  description: "Portable Bluetooth speaker",
-  price: 90,
-  available: true,
-  user: user
-)
+# # ------------------------
+# # PRODUCT GENERATOR
+# # ------------------------
 
-Product.create!(
-  name: "Power Bank",
-  description: "20000mAh portable charger",
-  price: 55,
-  available: true,
-  user: user
-)
+# def generate_products(category:, base_names:, keyword:)
+#   base_names.each do |name|
+#     create_product(
+#       name: name,
+#       description: "#{name} designed for modern homes. Ideal for #{category.name.downcase}, combining style, comfort, and functionality.",
+#       price: rand(50..1200),
+#       category: category,
+#       keyword: keyword
+#     )
+#   end
+# end
 
-Product.create!(
-  name: "VR Headset",
-  description: "Virtual reality headset",
-  price: 400,
-  available: true,
-  user: user
-)
+# # ------------------------
+# # LIVING ROOM (10)
+# # ------------------------
+# generate_products(
+#   category: categories[:living_room],
+#   keyword: "living room furniture",
+#   base_names: [
+#     "Scandinavian Sofa",
+#     "Modern Coffee Table",
+#     "Velvet Armchair",
+#     "Wood TV Stand",
+#     "Minimalist Bookshelf",
+#     "Glass Side Table",
+#     "Corner Sectional Sofa",
+#     "Recliner Chair",
+#     "Large Area Rug",
+#     "Wall Art Set"
+#   ]
+# )
 
-Product.create!(
-  name: "Graphics Tablet",
-  description: "Digital drawing tablet",
-  price: 210,
-  available: true,
-  user: user
-)
+# # ------------------------
+# # BEDROOM (10)
+# # ------------------------
+# generate_products(
+#   category: categories[:bedroom],
+#   keyword: "bedroom furniture",
+#   base_names: [
+#     "Queen Size Bed",
+#     "Memory Foam Mattress",
+#     "Bedside Table",
+#     "Wardrobe Closet",
+#     "Luxury Bedding Set",
+#     "Soft Pillow Set",
+#     "Full-Length Mirror",
+#     "Bedroom Bench",
+#     "Storage Bed Frame",
+#     "Night Lamp"
+#   ]
+# )
 
-Product.create!(
-  name: "Laptop Stand",
-  description: "Adjustable aluminum laptop stand",
-  price: 70,
-  available: true,
-  user: user
-)
+# # ------------------------
+# # KITCHEN (10)
+# # ------------------------
+# generate_products(
+#   category: categories[:kitchen],
+#   keyword: "kitchen tools",
+#   base_names: [
+#     "Nonstick Frying Pan",
+#     "Knife Set",
+#     "Blender Machine",
+#     "Coffee Maker",
+#     "Toaster Oven",
+#     "Cooking Pot Set",
+#     "Cutting Board",
+#     "Dish Rack",
+#     "Microwave Oven",
+#     "Electric Kettle"
+#   ]
+# )
 
-Product.create!(
-  name: "Cable Organizer",
-  description: "Desk cable management box",
-  price: 25,
-  available: true,
-  user: user
-)
+# # ------------------------
+# # OFFICE (10)
+# # ------------------------
+# generate_products(
+#   category: categories[:office],
+#   keyword: "office furniture",
+#   base_names: [
+#     "Office Desk",
+#     "Ergonomic Chair",
+#     "Desk Lamp",
+#     "Laptop Stand",
+#     "Office Bookshelf",
+#     "Drawer Organizer",
+#     "Monitor Stand",
+#     "Whiteboard",
+#     "Office Cabinet",
+#     "Standing Desk"
+#   ]
+# )
 
-Product.create!(
-  name: "Cotton T-Shirt",
-  description: "Comfortable white cotton t-shirt",
-  price: 20,
-  available: true,
-  user: user
-)
+# # ------------------------
+# # LIGHTING (10)
+# # ------------------------
+# generate_products(
+#   category: categories[:lighting],
+#   keyword: "home lighting",
+#   base_names: [
+#     "Ceiling Light Fixture",
+#     "Floor Lamp",
+#     "Table Lamp",
+#     "LED Strip Lights",
+#     "Pendant Light",
+#     "Wall Sconce",
+#     "Smart Bulb",
+#     "Desk Light",
+#     "Outdoor Lantern",
+#     "Chandelier"
+#   ]
+# )
 
-Product.create!(
-  name: "Blue Jeans",
-  description: "Classic blue denim jeans",
-  price: 55,
-  available: true,
-  user: user
-)
+# # ------------------------
+# # DECORATION (10)
+# # ------------------------
+# generate_products(
+#   category: categories[:decor],
+#   keyword: "home decor",
+#   base_names: [
+#     "Decorative Vase",
+#     "Wall Mirror",
+#     "Indoor Plant",
+#     "Photo Frame Set",
+#     "Candle Holder",
+#     "Wall Clock",
+#     "Decorative Sculpture",
+#     "Throw Blanket",
+#     "Decorative Tray",
+#     "Shelf Decor Set"
+#   ]
+# )
 
-Product.create!(
-  name: "Hoodie",
-  description: "Warm fleece hoodie",
-  price: 45,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Running Shoes",
-  description: "Lightweight running sneakers",
-  price: 80,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Baseball Cap",
-  description: "Adjustable cotton cap",
-  price: 18,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Backpack",
-  description: "Durable school backpack",
-  price: 40,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Notebook",
-  description: "200-page lined notebook",
-  price: 8,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Ballpoint Pens",
-  description: "Pack of 10 blue pens",
-  price: 6,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Highlighters",
-  description: "Set of 5 colorful highlighters",
-  price: 9,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Pencil Case",
-  description: "Fabric pencil pouch",
-  price: 12,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Desk Chair",
-  description: "Comfortable office desk chair",
-  price: 120,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Water Bottle",
-  description: "Reusable stainless steel bottle",
-  price: 22,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Coffee Mug",
-  description: "Ceramic coffee mug",
-  price: 14,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Blanket",
-  description: "Soft fleece blanket",
-  price: 35,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Pillow",
-  description: "Memory foam pillow",
-  price: 30,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Sunglasses",
-  description: "UV protection sunglasses",
-  price: 28,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Leather Belt",
-  description: "Classic brown leather belt",
-  price: 32,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Winter Jacket",
-  description: "Warm insulated jacket",
-  price: 120,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Sports Shorts",
-  description: "Breathable athletic shorts",
-  price: 25,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Yoga Mat",
-  description: "Non-slip exercise yoga mat",
-  price: 35,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Lunch Box",
-  description: "Insulated lunch container",
-  price: 18,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Sticky Notes",
-  description: "Pack of colorful sticky notes",
-  price: 7,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Stapler",
-  description: "Standard office stapler",
-  price: 10,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Scissors",
-  description: "Sharp stainless steel scissors",
-  price: 9,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Desk Organizer",
-  description: "Organizer for pens and office supplies",
-  price: 16,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Wall Clock",
-  description: "Minimalist wall clock",
-  price: 27,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Photo Frame",
-  description: "Wooden photo frame",
-  price: 15,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Reusable Shopping Bag",
-  description: "Eco-friendly cloth shopping bag",
-  price: 12,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Kitchen Knife",
-  description: "Stainless steel chef knife",
-  price: 38,
-  available: true,
-  user: user
-)
-
-Product.create!(
-  name: "Cutting Board",
-  description: "Wooden kitchen cutting board",
-  price: 24,
-  available: true,
-  user: user
-)
-
-puts "Finished!"
+# puts "Seeding done!"

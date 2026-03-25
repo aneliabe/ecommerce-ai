@@ -1,4 +1,40 @@
-<h1>Products</h1>
+<div class="container">
+  <h1 class="page-title">All Products</h1>
+
+  <div class="products-grid">
+    <% @products.each do |product| %>
+
+      <%= link_to product_path(product), class: "product-card-link" do %>
+
+        <div class="product-card">
+
+          <% if product.photos.attached? %>
+            <%= image_tag product.photos.first, class: "product-image" %>
+          <% end %>
+
+          <div class="product-info">
+            <h3><%= product.name %></h3>
+            <p class="category"><%= product.category&.name %></p>
+            <p class="price">$<%= product.price %></p>
+            <% if product.available? %>
+              <p class="available">In stock</p>
+            <% else %>
+              <p class="unavailable">Out of stock</p>
+            <% end %>
+          </div>
+        </div>
+
+      <% end %>
+
+    <% end %>
+  </div>
+</div>
+
+
+
+
+
+<!-- <h1>Products</h1>
 
 <%= link_to "New Product", new_product_path, class: "btn btn-primary" %>
 
@@ -15,4 +51,4 @@
   </div>
 
   <hr>
-<% end %>
+<% end %> -->

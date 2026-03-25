@@ -1,2 +1,64 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+
+<div class="banner" style="background-image: linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)), url('<%= image_path "banner.png" %>');">
+  <div class="container">
+    <h1>Find the perfect <strong>product</strong> for your house</h1>
+    <p>Browse or sign up to ask our AI assistant for help</p>
+
+    <%= simple_form_for :search, url: products_path, method: :get, html: { class: "simple-search-form" } do |f| %>
+
+      <%= f.input :query,
+                  label: false,
+                  placeholder: "Search products...",
+                  input_html: { value: params.dig(:search, :query) } %>
+
+      <%= f.button :submit, "Search" %>
+
+    <% end %>
+  </div>
+</div>
+<div class="container">
+  <div class="categories">
+    <%= link_to "All", root_path, class: "category-pill" %>
+    <% @categories.each do |category| %>
+      <%= link_to category.name, root_path(category_id: category.id), class: "category-pill" %>
+    <% end %>
+  </div>
+
+  <h2 class="section-title">
+    <% if @selected_category %>
+      <%= @selected_category.name %>
+    <% else %>
+      Discover Products
+    <% end %>
+</h2>
+
+
+  <div class="products-grid">
+    <% @products.each do |product| %>
+
+      <%= link_to product_path(product), class: "product-card-link" do %>
+        <div class="product-card">
+
+          <% if product.photos.attached? %>
+            <%= image_tag product.photos.first, class: "product-image" %>
+          <% end %>
+
+          <div class="product-info">
+            <h3><%= product.name %></h3>
+            <p class="category"><%= product.category&.name %></p>
+            <p class="price">$<%= product.price %></p>
+            <% if product.available? %>
+              <p class="available">In stock</p>
+            <% else %>
+              <p class="unavailable">Out of stock</p>
+            <% end %>
+          </div>
+
+        </div>
+      <% end %>
+
+    <% end %>
+  </div>
+
+</div>
+

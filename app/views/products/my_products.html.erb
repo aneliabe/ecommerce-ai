@@ -1,0 +1,35 @@
+<h1 class="page-title">My Products</h1>
+
+<div class="products-grid">
+  <% @products.each do |product| %>
+
+    <%= link_to product_path(product), class: "product-card-link" do %>
+
+      <div class="product-card">
+
+        <% if product.photos.attached? %>
+          <%= image_tag product.photos.first, class: "product-image" %>
+        <% end %>
+
+        <div class="product-info">
+          <h3><%= product.name %></h3>
+          <p class="category"><%= product.category&.name %></p>
+          <p class="price">$<%= product.price %></p>
+          <% if product.available? %>
+            <p class="available">In stock</p>
+          <% else %>
+            <p class="unavailable">Out of stock</p>
+          <% end %>
+
+          <%= link_to "Edit", edit_product_path(product), class: "btn-small" %>
+
+          <%= link_to "Delete", product_path(product),
+                data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                class: "btn-small danger" %>
+        </div>
+      </div>
+
+    <% end %>
+
+  <% end %>
+</div>

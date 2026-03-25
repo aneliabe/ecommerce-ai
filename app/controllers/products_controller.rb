@@ -3,10 +3,27 @@ class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
   def index
-    @products = Product.all
+    if params.dig(:search, :query).present?
+      query = params[:search][:query]
+
+      exact = Product.where("LOWER(name) = ?", query.downcase)
+      partial = Product.where("name ILIKE ?", "%#{query}%")
+      @products = exact.exists? ? exact : partial
+    else
+      @products = Product.all.sample(8)
+    end
   end
 
   def show
+    @product = Product.find(params[:id])
+    @qr_code = RQRCode::QRCode.new(@product.qr_code)
+    @svg = @qr_code.as_svg(
+      offset: 0,
+      color: '000',
+      shape_rendering: 'crispEdges',
+      standalone: true,
+      module_size: 5
+    )
   end
 
   def new
@@ -36,9 +53,18 @@ class ProductsController < ApplicationController
   end
 
   def destroy
-    @product.destroy
-    redirect_to products_path
+    if @product.orders.exists?
+      redirect_to @product, alert: "Cannot delete a product with existing orders."
+    else
+      @product.destroy
+      redirect_to products_path, notice: "Product deleted."
+    end
   end
+
+  def my_products
+    @products = current_user.products
+  end
+
 
   private
 
@@ -47,6 +73,6 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:name, :description, :price, :available)
+    params.require(:product).permit(:name, :description, :price, :stock_quantity, :category_id, :qr_code, photos: [])
   end
 end

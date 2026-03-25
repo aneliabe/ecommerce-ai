@@ -6,16 +6,19 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     
-    <%= favicon_link_tag 'logoecom.jpg' %>
+    <%= favicon_link_tag 'logo.png' %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="page-container">
     <%= render "shared/navbar" %>
-    <%= render "shared/flashes" %>
+    <main class="main-content">
+      <%= render "shared/flashes" %>
 
-    <%= yield %>
+      <%= yield %>
+    </main>
+    <%= render "shared/footer" %>
   </body>
 </html>

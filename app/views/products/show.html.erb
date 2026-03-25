@@ -1,17 +1,81 @@
-<h1><%= @product.name %></h1>
+<div class="product-show">
 
-<p><%= @product.description %></p>
+  <div class="product-show-container">
 
-<p>
-  Price: $<%= @product.price %>
-</p>
+    <!-- LEFT: IMAGES -->
+    <div class="product-image-section">
+      <%= link_to "← Back to products", products_path, class: "product-link" %>
+      <% if @product.photos.attached? %>
+        <%= cl_image_tag @product.photos.first.key, class: "main-product-image" %>
+      <% end %>
 
-<p>
-  Available:
-  <%= @product.available ? "Yes" : "No" %>
-</p>
+      <div class="thumbnails">
+        <% @product.photos.each do |photo| %>
+          <%= cl_image_tag photo.key, class: "thumbnail" %>
+        <% end %>
+      </div>
+    </div>
 
-<%= link_to "Edit", edit_product_path(@product) %> |
-<%= link_to "Delete", product_path(@product),
-      data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %> |
-<%= link_to "Back", products_path %>
+    <!-- RIGHT: INFO -->
+    <div class="product-info">
+
+      <h1><%= @product.name %></h1>
+
+      <p class="category">
+        <%= @product.category&.name %>
+      </p>
+
+      <p class="price">$<%= @product.price %></p>
+
+      <p class="description">
+        <%= @product.description %>
+      </p>
+
+      <p class="seller">
+        Sold by: <%= @product.user.email %>
+      </p>
+
+      <p class="stock">
+        Stock: <%= @product.stock_quantity %>
+      </p>
+
+      <% if @product.available? %>
+        <p class="available">In stock</p>
+      <% else %>
+        <p class="unavailable">Out of stock</p>
+      <% end %>
+
+      <div class="info-edit">
+        <% if user_signed_in? && current_user == @product.user %>
+          <%= link_to "Edit Product", edit_product_path(@product), class: "product-link" %>
+          |
+          <% if current_user == @product.user && @product.orders.empty? %>
+            <%= link_to "Delete",
+              product_path(@product),
+              data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+              class: "product-link" %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <!-- BUY BUTTON -->
+    <%= form_with url: orders_path do %>
+      <%= hidden_field_tag 'product_id', @product.id %>
+
+      <% if @product.available? %>
+        <%= submit_tag 'Purchase', class: 'buy-button' %>
+      <% else %>
+        <button class="buy-button" disabled>Out of stock</button>
+      <% end %>
+
+    <% end %>
+     </div>
+
+    <div class="qrcode">
+      <%= @svg.html_safe %>
+    </div>
+
+  </div>
+
+</div>
+
