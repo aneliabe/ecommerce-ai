@@ -12,6 +12,7 @@ class Product < ApplicationRecord
   monetize :price_cents
 
   has_many_attached :photos
+  has_many :orders, dependent: :restrict_with_error
 
   before_validation :generate_sku
 

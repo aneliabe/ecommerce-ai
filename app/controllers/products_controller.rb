@@ -3,11 +3,12 @@ class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
   def index
-    if params[:query].present?
-      @products = Product.where(
-        "name ILIKE :query OR description ILIKE :query",
-        query: "%#{params[:query]}%"
-      )
+    if params.dig(:search, :query).present?
+      query = params[:search][:query]
+
+      exact = Product.where("LOWER(name) = ?", query.downcase)
+      partial = Product.where("name ILIKE ?", "%#{query}%")
+      @products = exact.exists? ? exact : partial
     else
       @products = Product.all.sample(8)
     end
@@ -52,8 +53,12 @@ class ProductsController < ApplicationController
   end
 
   def destroy
-    @product.destroy
-    redirect_to products_path
+    if @product.orders.exists?
+      redirect_to @product, alert: "Cannot delete a product with existing orders."
+    else
+      @product.destroy
+      redirect_to products_path, notice: "Product deleted."
+    end
   end
 
   def my_products

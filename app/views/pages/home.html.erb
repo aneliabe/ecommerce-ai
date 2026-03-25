@@ -4,14 +4,16 @@
     <h1>Find the perfect <strong>product</strong> for your house</h1>
     <p>Browse or sign up to ask our AI assistant for help</p>
 
-      <%= simple_form_for :search, url: products_path, method: :get, html: { class: "simple-search-form" } do |f| %>
-        <%= f.input :query, 
-                    label: false, 
-                    placeholder: "Search products...", 
-                    input_html: { value: params[:query] } %>
+    <%= simple_form_for :search, url: products_path, method: :get, html: { class: "simple-search-form" } do |f| %>
 
-        <%= f.button :submit, "Search" %>
-      <% end %>
+      <%= f.input :query,
+                  label: false,
+                  placeholder: "Search products...",
+                  input_html: { value: params.dig(:search, :query) } %>
+
+      <%= f.button :submit, "Search" %>
+
+    <% end %>
   </div>
 </div>
 <div class="container">

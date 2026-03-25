@@ -48,13 +48,13 @@
       <div class="info-edit">
         <% if user_signed_in? && current_user == @product.user %>
           <%= link_to "Edit Product", edit_product_path(@product), class: "product-link" %>
-        <% end %>
-
-        <% if user_signed_in? && current_user == @product.user %>
-          <%= link_to "Delete",
-            product_path(@product),
-            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
-            class: "product-link" %>
+          |
+          <% if current_user == @product.user && @product.orders.empty? %>
+            <%= link_to "Delete",
+              product_path(@product),
+              data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+              class: "product-link" %>
+          <% end %>
         <% end %>
       </div>
 
@@ -69,10 +69,8 @@
       <% end %>
 
     <% end %>
+     </div>
 
-      
-
-    </div>
     <div class="qrcode">
       <%= @svg.html_safe %>
     </div>
