@@ -9,6 +9,18 @@
           <%= f.error_notification %>
 
           <div class="form-inputs">
+            <%= f.input :name,
+                        required: true,
+                        autofocus: true,
+                        input_html: { autocomplete: "name" }%>
+            <%= f.input :birth_date,
+                        label: "Data de Nascimento",
+                        required: true,
+                        as: :date,
+                        start_year: Time.zone.now.year - 120,
+                        end_year: Time.zone.now.year,
+                        order: [:day, :month, :year],
+                        input_html: { class: 'form-control' } %>
             <%= f.input :email,
                         required: true,
                         autofocus: true,
@@ -20,6 +32,7 @@
             <%= f.input :password_confirmation,
                         required: true,
                         input_html: { autocomplete: "new-password" } %>
+            <%= f.input :photo, as: :file %>
           </div>
 
           <div class="form-actions">
