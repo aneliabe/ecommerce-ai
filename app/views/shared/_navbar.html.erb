@@ -18,9 +18,19 @@
             <%= link_to "AI Assistant", questions_path, class: "nav-link" %>
           </li>
           <li class="nav-item dropdown">
-          <a href="#" class="avatar" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <%= image_tag "https://kitt.lewagon.com/placeholder/users/ssaunier", class: "avatar", alt: "dropdown menu" %>
-          </a>
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdown">
+                <% if current_user.avatar.attached? %>
+                  <%= cl_image_tag current_user.avatar.key,
+                      width: 56, height: 56, dpr: 2, crop: :fill, gravity: :face,
+                      quality: "auto", fetch_format: "auto",
+                      class: "rounded-circle me-2", style: "object-fit:cover;" %>
+                <% else %>
+                  <%= image_tag "https://via.placeholder.com/56",
+                      width: 56, height: 56,
+                      class: "rounded-circle me-2", style: "object-fit:cover;" %>
+                <% end %>
+              </a>
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
               <% if current_user&.products&.any? %>
                 <%= link_to "My Products", my_products_products_path, class: "dropdown-item" %>
