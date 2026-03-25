@@ -24,6 +24,10 @@
     <%= f.input :photos, as: :file, input_html: { multiple: true } %>
   </div>
 
+  <div class="form-group">
+    <%= f.input :qr_code %>
+  </div>
+
   <%= f.submit @product.persisted? ? "Update Product" : "Create Product", class: "btn-main" %>
 
 
