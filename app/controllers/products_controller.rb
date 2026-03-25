@@ -15,6 +15,14 @@ class ProductsController < ApplicationController
 
   def show
     @product = Product.find(params[:id])
+    @qr_code = RQRCode::QRCode.new(@product.qr_code)
+    @svg = @qr_code.as_svg(
+      offset: 0,
+      color: '000',
+      shape_rendering: 'crispEdges',
+      standalone: true,
+      module_size: 5
+    )
   end
 
   def new
@@ -60,6 +68,6 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:name, :description, :price, :stock_quantity, :category_id, photos: [])
+    params.require(:product).permit(:name, :description, :price, :stock_quantity, :category_id, :qr_code, photos: [])
   end
 end
