@@ -77,8 +77,15 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+# production:
+#   <<: *default
+#   database: ecommerce_ai_production
+#   username: ecommerce_ai
+#   password: <%= ENV["ECOMMERCE_AI_DATABASE_PASSWORD"] %>
+
+#for render deploy
 production:
-  <<: *default
-  database: ecommerce_ai_production
-  username: ecommerce_ai
-  password: <%= ENV["ECOMMERCE_AI_DATABASE_PASSWORD"] %>
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  url: <%= ENV['DATABASE_URL'] %>
