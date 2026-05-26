@@ -3,33 +3,29 @@
 <div class="products-grid">
   <% @products.each do |product| %>
 
-    <%= link_to product_path(product), class: "product-card-link" do %>
-
-      <div class="product-card">
-
+    <div class="product-card">
+      <%= link_to product_path(product) do %>
         <% if product.photos.attached? %>
           <%= image_tag product.photos.first, class: "product-image" %>
         <% end %>
+      <% end %>
+      <div class="product-info">
+        <h3><%= product.name %></h3>
+        <p class="category"><%= product.category&.name %></p>
+        <p class="price">$<%= product.price %></p>
+        <% if product.available? %>
+          <p class="available">In stock</p>
+        <% else %>
+          <p class="unavailable">Out of stock</p>
+        <% end %>
 
-        <div class="product-info">
-          <h3><%= product.name %></h3>
-          <p class="category"><%= product.category&.name %></p>
-          <p class="price">$<%= product.price %></p>
-          <% if product.available? %>
-            <p class="available">In stock</p>
-          <% else %>
-            <p class="unavailable">Out of stock</p>
-          <% end %>
+        <%= link_to "Edit", edit_product_path(product), class: "btn-small" %>
 
-          <%= link_to "Edit", edit_product_path(product), class: "btn-small" %>
-
-          <%= link_to "Delete", product_path(product),
-                data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
-                class: "btn-small danger" %>
-        </div>
+        <%= link_to "Delete", product_path(product),
+              data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+              class: "btn-small danger" %>
       </div>
-
-    <% end %>
+    </div>
 
   <% end %>
 </div>
