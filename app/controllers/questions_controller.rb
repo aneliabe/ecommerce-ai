@@ -10,7 +10,7 @@ class QuestionsController < ApplicationController
     @question = Question.new(question_params)
     @question.user = current_user
     if @question.save
-      ChatbotJob.perform_later(@question)
+      ChatbotJob.perform_now(@question) # Use perform_later with a worker process for async execution in production
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.append(:questions, partial: "questions/question",
